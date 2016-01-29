@@ -40,6 +40,7 @@ namespace Rotslyn.Transpilers.Tests
         [InlineData(nameof(MultipleTypesInSameFileClass))]
         [InlineData(nameof(Rotslyn.Transpilers.Tests.Samples.EmptyNamespace))]
         [InlineData(nameof(BasicPublicStaticClassMultipleMethods))]
+        [InlineData(nameof(BasicClassWithAutoProperties))]
         public void IntegrationTests(string testname)
         {
             var csCode = ReadFile(testname, FileType.CS);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -42,21 +43,47 @@ namespace Rotslyn.Transpilers
 
                         tsModule.Members.Add(tsClassNode);
 
-                        foreach (var method in classNode.Members.OfType<MethodDeclarationSyntax>())
+                        foreach (var member in classNode.Members)
                         {
-                            var tsMethod = new TSMemberFunctionDeclaration
+                            if (member is MethodDeclarationSyntax)
                             {
-                                Name = method.Identifier.Text,
-                                Body = "console.log(\"Hello World!\");"
-                            };
+                                var method = member as MethodDeclarationSyntax;
 
-                            tsClassNode.Members.Add(tsMethod);
+                                var tsMethod = new TSMemberFunctionDeclaration
+                                {
+                                    Name = method.Identifier.Text,
+                                    Body = "console.log(\"Hello World!\");",
+                                    ReturnType = method.ReturnType.ToString(),
+                                };
 
-                            if (method.Modifiers.Any(m => m.Kind() == SyntaxKind.PublicKeyword))
-                                tsMethod.Modifiers.Add(new TSSyntaxToken {Kind = TSKind.Public});
+                                tsClassNode.Members.Add(tsMethod);
 
-                            if (method.Modifiers.Any(m => m.Kind() == SyntaxKind.StaticKeyword))
-                                tsMethod.Modifiers.Add(new TSSyntaxToken {Kind = TSKind.Static});
+                                if (method.Modifiers.Any(m => m.Kind() == SyntaxKind.PublicKeyword))
+                                    tsMethod.Modifiers.Add(new TSSyntaxToken {Kind = TSKind.Public});
+
+                                if (method.Modifiers.Any(m => m.Kind() == SyntaxKind.StaticKeyword))
+                                    tsMethod.Modifiers.Add(new TSSyntaxToken {Kind = TSKind.Static});
+                            }
+
+                            if (member is PropertyDeclarationSyntax)
+                            {
+                                var property = member as PropertyDeclarationSyntax;
+
+                                var tsMethod = new TSPropertyDeclaration
+                                {
+                                    Name = property.Identifier.Text,
+                                    //Body = "console.log(\"Hello World!\");",
+                                    ReturnType = property.Type.GetTSType(),
+                                };
+
+                                tsClassNode.Members.Add(tsMethod);
+
+                                if (property.Modifiers.Any(m => m.Kind() == SyntaxKind.PublicKeyword))
+                                    tsMethod.Modifiers.Add(new TSSyntaxToken { Kind = TSKind.Public });
+
+                                if (property.Modifiers.Any(m => m.Kind() == SyntaxKind.StaticKeyword))
+                                    tsMethod.Modifiers.Add(new TSSyntaxToken { Kind = TSKind.Static });
+                            }
                         }
                     }
 
@@ -91,6 +118,99 @@ namespace Rotslyn.Transpilers
             }
 
             return tsUnit.ToString();
+        }
+    }
+
+    public static class TypeMap
+    {
+        public const string NumberType = "number";
+        public const string BooleanType = "boolean";
+        public const string StringType = "string";
+        public const string VoidType = "void";
+
+        static TypeMap()
+        {
+            TypeMappings.AddRange(NumberTypeMappings);
+            TypeMappings.AddRange(BooleanTypeMappings);
+            TypeMappings.AddRange(StringTypeMappings);
+        }
+
+        private static void AddRange(this IDictionary<string, string> dictionary,
+            IDictionary<string, string> dictionaryToAdd)
+        {
+            foreach(var pair in dictionaryToAdd)
+                dictionary.Add(pair);
+        }
+
+        public static Dictionary<string, string> TypeMappings = new Dictionary<string, string>();
+
+        public static Dictionary<string, string> NumberTypeMappings = new Dictionary<string, string>()
+        {
+            [nameof(Int32)] = NumberType,
+            [nameof(Int16)] = NumberType,
+            [nameof(Int64)] = NumberType,
+            [nameof(Double)] = NumberType,
+            [nameof(Single)] = NumberType,
+            [nameof(Decimal)] = NumberType,
+        };
+
+        public static Dictionary<string, string> BooleanTypeMappings = new Dictionary<string, string>()
+        {
+            [nameof(Boolean)] = BooleanType,
+        };
+
+        public static Dictionary<string, string> StringTypeMappings = new Dictionary<string, string>()
+        {
+            [nameof(String)] = StringType,
+        };
+
+        public static List<SyntaxKind> NumberKinds { get; }= new List<SyntaxKind>
+        {
+            SyntaxKind.IntKeyword,
+            SyntaxKind.DoubleKeyword,
+            SyntaxKind.FloatKeyword,
+            SyntaxKind.DecimalKeyword
+        };
+
+        public static List<SyntaxKind> BooleanKinds { get; } = new List<SyntaxKind>
+        {
+            SyntaxKind.BoolKeyword,
+        };
+
+        public static List<SyntaxKind> StringKinds { get; } = new List<SyntaxKind>
+        {
+            SyntaxKind.StringKeyword,
+        };
+
+        public static List<SyntaxKind> VoidKinds { get; } = new List<SyntaxKind>
+        {
+            SyntaxKind.VoidKeyword,
+        };
+
+        public static string GetTSType(this TypeSyntax typeSyntax)
+        {
+            if (typeSyntax is PredefinedTypeSyntax)
+            {
+                var predefinedType = (typeSyntax as PredefinedTypeSyntax);
+                var kind = predefinedType.Keyword.Kind();
+                if (NumberKinds.Contains(kind))
+                    return NumberType;
+
+                if (BooleanKinds.Contains(kind))
+                    return BooleanType;
+
+                if (StringKinds.Contains(kind))
+                    return StringType;
+
+                if (VoidKinds.Contains(kind))
+                    return VoidType;
+            }
+
+            var identifier = typeSyntax.ToString();
+            if (TypeMappings.ContainsKey(identifier))
+                return TypeMappings[identifier];
+
+            return identifier;
         }
     }
 }
