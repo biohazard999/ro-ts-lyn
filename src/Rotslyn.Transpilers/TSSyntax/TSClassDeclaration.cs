@@ -7,9 +7,7 @@ namespace Rotslyn.Transpilers.TSSyntax
     public class TSClassDeclaration : TSMemberDeclarationSyntax
     {
         public string Name { get; set; }
-
-        public IList<TSMemberDeclarationSyntax> Members { get; } = new List<TSMemberDeclarationSyntax>();
-
+        
         public TSSyntaxToken Keyword { get; } = new TSSyntaxToken { Kind = TSKind.Class };
 
         public IList<TSSyntaxToken> Modifiers { get; } = new List<TSSyntaxToken>();

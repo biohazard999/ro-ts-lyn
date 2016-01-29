@@ -8,7 +8,7 @@ namespace Rotslyn.Transpilers.TSSyntax
     {
         public string Name { get; set; }
 
-        public IList<TSEnumMemberDeclaration> Members { get; } = new List<TSEnumMemberDeclaration>();
+        public new IList<TSEnumMemberDeclaration> Members { get; } = new List<TSEnumMemberDeclaration>();
 
         public TSSyntaxToken Keyword { get; } = new TSSyntaxToken { Kind = TSKind.Enum };
 
