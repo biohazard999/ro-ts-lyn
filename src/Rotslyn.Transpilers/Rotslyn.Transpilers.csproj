@@ -42,6 +42,14 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RotslynTranspiler.cs" />
+    <Compile Include="TSSyntax\TSClassDeclaration.cs" />
+    <Compile Include="TSSyntax\TSKind.cs" />
+    <Compile Include="TSSyntax\TSMemberDeclarationSyntax.cs" />
+    <Compile Include="TSSyntax\TSMemberFunctionDeclaration.cs" />
+    <Compile Include="TSSyntax\TSModuleDeclaration.cs" />
+    <Compile Include="TSSyntax\TSSourceUnit.cs" />
+    <Compile Include="TSSyntax\TSSyntaxNode.cs" />
+    <Compile Include="TSSyntax\TSSyntaxToken.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

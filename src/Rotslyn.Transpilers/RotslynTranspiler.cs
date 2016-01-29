@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using Rotslyn.Transpilers.TSSyntax;
 
 namespace Rotslyn.Transpilers
 {
@@ -14,62 +16,59 @@ namespace Rotslyn.Transpilers
     {
         public static string Transpile(string code, Language language)
         {
-            var stringBuilder = new StringBuilder();
-
             var syntaxTree = SyntaxFactory.ParseSyntaxTree(code);
             var node = (CompilationUnitSyntax)syntaxTree.GetRoot();
 
-            if (node.Members[0] is NamespaceDeclarationSyntax)
+            var tsUnit = new TSSourceUnit();
+
+            foreach (var namespaceDeclaration in node.Members.OfType<NamespaceDeclarationSyntax>())
             {
-                var namespaceDeclaration = (NamespaceDeclarationSyntax)node.Members[0];
-
-                stringBuilder.Append("module ");
-                stringBuilder.Append(namespaceDeclaration.Name);
-                stringBuilder.AppendLine(" {");
-
-                var classNode = namespaceDeclaration.Members.OfType<ClassDeclarationSyntax>().FirstOrDefault();
-                if (classNode != null)
+                var tsModule = new TSModuleDeclaration
                 {
-                    stringBuilder.AppendTab(1);
-                    stringBuilder.Append("export class ");
-                    stringBuilder.Append(classNode.Identifier.Text);
-                    stringBuilder.AppendLine(" {");
+                    Name = namespaceDeclaration.Name.ToString(),
+                };
+
+                tsUnit.Members.Add(tsModule);
+
+                foreach (var classNode in namespaceDeclaration.Members.OfType<ClassDeclarationSyntax>())
+                {
+                    var tsClassNode = new TSClassDeclaration
+                    {
+                        Modifiers = { new TSSyntaxToken {Kind = TSKind.Export} },
+                        Name = classNode.Identifier.Text
+                    };
+
+                    tsModule.Members.Add(tsClassNode);
 
                     foreach (var method in classNode.Members.OfType<MethodDeclarationSyntax>())
                     {
-                        stringBuilder.AppendTab(2);
+                        var tsMethod = new TSMemberFunctionDeclaration
+                        {
+                            Name = method.Identifier.Text,
+                            Body = "console.log(\"Hello World!\");"
+                        };
+
+                        tsClassNode.Members.Add(tsMethod);
 
                         if (method.Modifiers.Any(m => m.Kind() == SyntaxKind.PublicKeyword))
-                            stringBuilder.Append("public ");
+                            tsMethod.Modifiers.Add(new TSSyntaxToken {Kind = TSKind.Public });
 
                         if (method.Modifiers.Any(m => m.Kind() == SyntaxKind.StaticKeyword))
-                            stringBuilder.Append("static ");
-
-                        stringBuilder.Append(method.Identifier.ToCamelCase());
-                        stringBuilder.AppendLine("() {");
-                        stringBuilder.AppendTab(3);
-
-                        stringBuilder.Append("console.log(\"Hello World!\");");
-
-                        stringBuilder.AppendLine();
-                        stringBuilder.AppendTabLine(2, "}");
+                            tsMethod.Modifiers.Add(new TSSyntaxToken { Kind = TSKind.Static });
                     }
-
-                    stringBuilder.AppendTabLine(1, "}");
                 }
-                stringBuilder.AppendTab(0, "}");
             }
 
-            return stringBuilder.ToString();
+            return tsUnit.ToString();
         }
     }
 
     public static class SyntaxHelpers
     {
-        public static string ToCamelCase(this SyntaxToken token)
+        public static string ToCamelCase(this string token)
         {
-            var firstCharLower = token.Text.Select(char.ToLower).First();
-            var camelCaseString = string.Concat(new[] { firstCharLower }.Concat(token.Text.Skip(1)));
+            var firstCharLower = token.Select(char.ToLower).First();
+            var camelCaseString = string.Concat(new[] { firstCharLower }.Concat(token.Skip(1)));
             return camelCaseString;
         }
 
