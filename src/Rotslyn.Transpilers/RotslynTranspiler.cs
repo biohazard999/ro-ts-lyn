@@ -40,7 +40,7 @@ namespace Rotslyn.Transpilers
                             Modifiers = {new TSSyntaxToken {Kind = TSKind.Export}},
                             Name = classNode.Identifier.Text
                         };
-
+                        
                         tsModule.Members.Add(tsClassNode);
 
                         foreach (var member in classNode.Members)
@@ -74,6 +74,8 @@ namespace Rotslyn.Transpilers
                                     Name = property.Identifier.Text,
                                     //Body = "console.log(\"Hello World!\");",
                                     ReturnType = property.Type.GetTSType(),
+                                    HasGetter = property.AccessorList.Accessors.Any(accessor => accessor.Keyword.IsKind(SyntaxKind.GetKeyword)),
+                                    HasSetter = property.AccessorList.Accessors.Any(accessor => accessor.Keyword.IsKind(SyntaxKind.SetKeyword)),
                                 };
 
                                 tsClassNode.Members.Add(tsMethod);
