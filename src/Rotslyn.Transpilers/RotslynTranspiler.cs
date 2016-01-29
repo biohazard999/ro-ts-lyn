@@ -72,7 +72,6 @@ namespace Rotslyn.Transpilers
                                 var tsProperty = new TSPropertyDeclaration
                                 {
                                     Name = property.Identifier.Text,
-                                    //Body = "console.log(\"Hello World!\");",
                                     ReturnType = property.Type.GetTSType(),
                                 };
 
@@ -93,6 +92,9 @@ namespace Rotslyn.Transpilers
                                     if (getAccessor.Modifiers.Any(m => m.Kind() == SyntaxKind.ProtectedKeyword))
                                         tsAccessor.Modifiers.Add(new TSSyntaxToken { Kind = TSKind.Protected });
 
+                                    if (getAccessor.Modifiers.Any(m => m.Kind() == SyntaxKind.InternalKeyword))
+                                        tsAccessor.Modifiers.Add(new TSSyntaxToken { Kind = TSKind.Public });
+
                                     if (getAccessor.Modifiers.Any(m => m.Kind() == SyntaxKind.StaticKeyword))
                                         tsAccessor.Modifiers.Add(new TSSyntaxToken { Kind = TSKind.Static });
                                 }
@@ -106,6 +108,9 @@ namespace Rotslyn.Transpilers
                                     tsProperty.Setter = tsAccessor;
 
                                     if (getAccessor.Modifiers.Any(m => m.Kind() == SyntaxKind.PublicKeyword))
+                                        tsAccessor.Modifiers.Add(new TSSyntaxToken { Kind = TSKind.Public });
+
+                                    if (getAccessor.Modifiers.Any(m => m.Kind() == SyntaxKind.InternalKeyword))
                                         tsAccessor.Modifiers.Add(new TSSyntaxToken { Kind = TSKind.Public });
 
                                     if (getAccessor.Modifiers.Any(m => m.Kind() == SyntaxKind.PrivateKeyword))
