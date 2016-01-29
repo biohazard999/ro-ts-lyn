@@ -29,59 +29,64 @@ namespace Rotslyn.Transpilers
 
                 tsUnit.Members.Add(tsModule);
 
-                foreach (var classNode in namespaceDeclaration.Members.OfType<ClassDeclarationSyntax>())
+                foreach (var memberNode in namespaceDeclaration.Members)
                 {
-                    var tsClassNode = new TSClassDeclaration
+                    if (memberNode is ClassDeclarationSyntax)
                     {
-                        Modifiers = { new TSSyntaxToken { Kind = TSKind.Export } },
-                        Name = classNode.Identifier.Text
-                    };
-
-                    tsModule.Members.Add(tsClassNode);
-
-                    foreach (var method in classNode.Members.OfType<MethodDeclarationSyntax>())
-                    {
-                        var tsMethod = new TSMemberFunctionDeclaration
+                        var classNode = memberNode as ClassDeclarationSyntax;
+                        var tsClassNode = new TSClassDeclaration
                         {
-                            Name = method.Identifier.Text,
-                            Body = "console.log(\"Hello World!\");"
+                            Modifiers = {new TSSyntaxToken {Kind = TSKind.Export}},
+                            Name = classNode.Identifier.Text
                         };
 
-                        tsClassNode.Members.Add(tsMethod);
+                        tsModule.Members.Add(tsClassNode);
 
-                        if (method.Modifiers.Any(m => m.Kind() == SyntaxKind.PublicKeyword))
-                            tsMethod.Modifiers.Add(new TSSyntaxToken { Kind = TSKind.Public });
-
-                        if (method.Modifiers.Any(m => m.Kind() == SyntaxKind.StaticKeyword))
-                            tsMethod.Modifiers.Add(new TSSyntaxToken { Kind = TSKind.Static });
-                    }
-                }
-
-                foreach (var enumNode in namespaceDeclaration.Members.OfType<EnumDeclarationSyntax>())
-                {
-                    var tsEnumNode = new TSEnumDeclaration
-                    {
-                        Modifiers = { new TSSyntaxToken { Kind = TSKind.Export } },
-                        Name = enumNode.Identifier.Text
-                    };
-
-                    tsModule.Members.Add(tsEnumNode);
-
-                    foreach (var enumValue in enumNode.Members)
-                    {
-                        var tsEnumValueNode = new TSEnumMemberDeclaration
+                        foreach (var method in classNode.Members.OfType<MethodDeclarationSyntax>())
                         {
-                            Name = enumValue.Identifier.Text
-                        };
+                            var tsMethod = new TSMemberFunctionDeclaration
+                            {
+                                Name = method.Identifier.Text,
+                                Body = "console.log(\"Hello World!\");"
+                            };
 
-                        tsEnumNode.Members.Add(tsEnumValueNode);
+                            tsClassNode.Members.Add(tsMethod);
 
-                        if (enumValue.EqualsValue != null)
-                        {
-                            tsEnumValueNode.Value = enumValue.EqualsValue.Value.ToString();
+                            if (method.Modifiers.Any(m => m.Kind() == SyntaxKind.PublicKeyword))
+                                tsMethod.Modifiers.Add(new TSSyntaxToken {Kind = TSKind.Public});
+
+                            if (method.Modifiers.Any(m => m.Kind() == SyntaxKind.StaticKeyword))
+                                tsMethod.Modifiers.Add(new TSSyntaxToken {Kind = TSKind.Static});
                         }
                     }
 
+                    if (memberNode is EnumDeclarationSyntax)
+                    {
+                        var enumNode = memberNode as EnumDeclarationSyntax;
+
+                        var tsEnumNode = new TSEnumDeclaration
+                        {
+                            Modifiers = { new TSSyntaxToken { Kind = TSKind.Export } },
+                            Name = enumNode.Identifier.Text
+                        };
+
+                        tsModule.Members.Add(tsEnumNode);
+
+                        foreach (var enumValue in enumNode.Members)
+                        {
+                            var tsEnumValueNode = new TSEnumMemberDeclaration
+                            {
+                                Name = enumValue.Identifier.Text
+                            };
+
+                            tsEnumNode.Members.Add(tsEnumValueNode);
+
+                            if (enumValue.EqualsValue != null)
+                            {
+                                tsEnumValueNode.Value = enumValue.EqualsValue.Value.ToString();
+                            }
+                        }
+                    }
                 }
             }
 

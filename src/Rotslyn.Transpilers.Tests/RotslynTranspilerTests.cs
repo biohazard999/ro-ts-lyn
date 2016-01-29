@@ -32,10 +32,13 @@ namespace Rotslyn.Transpilers.Tests
 
         [Theory]
         [InlineData(nameof(BasicPublicStaticClass))]
+        [InlineData(nameof(EmptyEnum))]
         [InlineData(nameof(BasicEnum))]
         [InlineData(nameof(EnumWithValues))]
         [InlineData(nameof(SelfReferencingEnum))]
         [InlineData(nameof(FlagsEnum))]
+        [InlineData(nameof(MultipleTypesInSameFileClass))]
+        [InlineData(nameof(Rotslyn.Transpilers.Tests.Samples.EmptyNamespace))]
         public void IntegrationTests(string testname)
         {
             var csCode = ReadFile(testname, FileType.CS);

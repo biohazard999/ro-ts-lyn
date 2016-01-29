@@ -8,9 +8,9 @@ namespace Rotslyn.Transpilers.TSSyntax
         public override string ToString()
         {
             if (Value != null)
-                return $"{Name} = {Value}";
+                return $"{2.GetTab()}{Name} = {Value}";
 
-            return Name;
+            return $"{2.GetTab()}{Name}";
         }
     }
 }

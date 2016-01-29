@@ -22,9 +22,11 @@ namespace Rotslyn.Transpilers.TSSyntax
 
             sb.AppendLine($" {Name} {{");
 
-            sb.Append(string.Join($",{System.Environment.NewLine}", Members.Select(m => $"{2.GetTab()}{m.ToString()}")));
+            sb.Append(string.Join($",{System.Environment.NewLine}", Members.Select(m => m.ToString())));
 
-            sb.AppendLine();
+            if (Members.Count > 0)
+                sb.AppendLine();
+
             sb.AppendTab(1, "}");
 
             return sb.ToString();

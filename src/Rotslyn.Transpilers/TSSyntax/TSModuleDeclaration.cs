@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text;
 
 namespace Rotslyn.Transpilers.TSSyntax
@@ -13,8 +14,14 @@ namespace Rotslyn.Transpilers.TSSyntax
             sb.AppendTab(0, Keyword.ToString());
             sb.AppendLine($" {Name} {{");
 
+            var count = Members.Count;
             foreach (var member in Members)
+            {
+                count--;
                 sb.AppendLine(member.ToString());
+                if (count > 0)
+                    sb.AppendLine();
+            }
 
             sb.AppendTab(0, "}");
 
