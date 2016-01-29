@@ -4,3 +4,4 @@ nuget Microsoft.CodeAnalysis.CSharp.Extensions
 nuget xunit
 nuget xunit.runner.visualstudio version_in_path: true
 nuget Shouldly
+nuget ApprovalTests

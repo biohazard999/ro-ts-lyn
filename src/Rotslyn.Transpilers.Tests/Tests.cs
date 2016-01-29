@@ -1,19 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ApprovalTests;
+using ApprovalTests.Reporters;
+using ApprovalTests.Utilities;
 using Shouldly;
 using Xunit;
 
 namespace Rotslyn.Transpilers.Tests
 {
-    public class Tests
+    [UseReporter(typeof(DiffReporter))]
+    public class RotslynTranspilerTests
     {
-        [Fact]
-        public void OneIsOne()
+        enum FileType
         {
-            1.ShouldBe(1);
+            CS,
+            TS
+        }
+
+        private string ReadFile(string name, FileType type)
+        {
+            var directory = "Samples";
+            var fileName = $"{name}.{type.ToString().ToLowerInvariant()}";
+            var filePath = Path.Combine(directory, fileName);
+            return File.ReadAllText(filePath);
+        }
+
+        [Fact]
+        public void BasicPublicStaticClass()
+        {
+            var csCode = ReadFile(nameof(BasicPublicStaticClass), FileType.CS);
+            var tsCode = ReadFile(nameof(BasicPublicStaticClass), FileType.TS);
+            var transipledTsCode = RotslynTranspiler.Transpile(csCode, Language.CSharp);
+
+            if (!tsCode.Equals(transipledTsCode))
+            {
+                tsCode.DiffWith(transipledTsCode);
+                transipledTsCode.ShouldBe(tsCode);
+            }
         }
     }
 }
