@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Rotslyn.Transpilers")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Rotslyn.Transpilers contains the transpilers between C# and TypeScript")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("delegate.at")]
 [assembly: AssemblyProduct("Rotslyn.Transpilers")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
