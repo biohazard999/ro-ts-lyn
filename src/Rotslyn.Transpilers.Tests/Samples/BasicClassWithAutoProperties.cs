@@ -22,5 +22,7 @@ namespace Rotslyn.Transpilers.Tests.Samples
         public String StringTypeMember { get; set; }
         public bool BooleanKeywordMember { get; set; }
         public Boolean BooleanTypeMember { get; set; }
+        public object ObjectKeywordMember { get; set; }
+        public Object ObjectTypeMember { get; set; }
     }
 }

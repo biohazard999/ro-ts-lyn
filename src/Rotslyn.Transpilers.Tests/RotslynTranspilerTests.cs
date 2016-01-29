@@ -42,6 +42,7 @@ namespace Rotslyn.Transpilers.Tests
         [InlineData(nameof(BasicPublicStaticClassMultipleMethods))]
         [InlineData(nameof(BasicClassWithAutoProperties))]
         [InlineData(nameof(BasicClassWithGetterOnlyProperties))]
+        [InlineData(nameof(BasicClassWithSetterOnlyProperties))]
         public void IntegrationTests(string testname)
         {
             var csCode = ReadFile(testname, FileType.CS);

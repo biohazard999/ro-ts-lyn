@@ -27,5 +27,9 @@
         public booleanKeywordMember: boolean;
 
         public booleanTypeMember: boolean;
+
+        public objectKeywordMember: any;
+
+        public objectTypeMember: any;
     }
 }

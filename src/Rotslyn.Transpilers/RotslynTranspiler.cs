@@ -69,22 +69,62 @@ namespace Rotslyn.Transpilers
                             {
                                 var property = member as PropertyDeclarationSyntax;
 
-                                var tsMethod = new TSPropertyDeclaration
+                                var tsProperty = new TSPropertyDeclaration
                                 {
                                     Name = property.Identifier.Text,
                                     //Body = "console.log(\"Hello World!\");",
                                     ReturnType = property.Type.GetTSType(),
-                                    HasGetter = property.AccessorList.Accessors.Any(accessor => accessor.Keyword.IsKind(SyntaxKind.GetKeyword)),
-                                    HasSetter = property.AccessorList.Accessors.Any(accessor => accessor.Keyword.IsKind(SyntaxKind.SetKeyword)),
                                 };
 
-                                tsClassNode.Members.Add(tsMethod);
+                                if(property.AccessorList.Accessors.Any(accessor => accessor.Keyword.IsKind(SyntaxKind.GetKeyword)))
+                                {
+                                    var getAccessor = property.AccessorList.Accessors.First(accessor => accessor.Keyword.IsKind(SyntaxKind.GetKeyword));
+
+                                    var tsAccessor = new TSAccessorSyntax();
+
+                                    tsProperty.Getter = tsAccessor;
+
+                                    if (getAccessor.Modifiers.Any(m => m.Kind() == SyntaxKind.PublicKeyword))
+                                        tsAccessor.Modifiers.Add(new TSSyntaxToken { Kind = TSKind.Public });
+
+                                    if (getAccessor.Modifiers.Any(m => m.Kind() == SyntaxKind.PrivateKeyword))
+                                        tsAccessor.Modifiers.Add(new TSSyntaxToken { Kind = TSKind.Private });
+
+                                    if (getAccessor.Modifiers.Any(m => m.Kind() == SyntaxKind.ProtectedKeyword))
+                                        tsAccessor.Modifiers.Add(new TSSyntaxToken { Kind = TSKind.Protected });
+
+                                    if (getAccessor.Modifiers.Any(m => m.Kind() == SyntaxKind.StaticKeyword))
+                                        tsAccessor.Modifiers.Add(new TSSyntaxToken { Kind = TSKind.Static });
+                                }
+
+                                if (property.AccessorList.Accessors.Any(accessor => accessor.Keyword.IsKind(SyntaxKind.SetKeyword)))
+                                {
+                                    var getAccessor = property.AccessorList.Accessors.First(accessor => accessor.Keyword.IsKind(SyntaxKind.SetKeyword));
+
+                                    var tsAccessor = new TSAccessorSyntax();
+
+                                    tsProperty.Setter = tsAccessor;
+
+                                    if (getAccessor.Modifiers.Any(m => m.Kind() == SyntaxKind.PublicKeyword))
+                                        tsAccessor.Modifiers.Add(new TSSyntaxToken { Kind = TSKind.Public });
+
+                                    if (getAccessor.Modifiers.Any(m => m.Kind() == SyntaxKind.PrivateKeyword))
+                                        tsAccessor.Modifiers.Add(new TSSyntaxToken { Kind = TSKind.Private });
+
+                                    if (getAccessor.Modifiers.Any(m => m.Kind() == SyntaxKind.ProtectedKeyword))
+                                        tsAccessor.Modifiers.Add(new TSSyntaxToken { Kind = TSKind.Protected });
+
+                                    if (getAccessor.Modifiers.Any(m => m.Kind() == SyntaxKind.StaticKeyword))
+                                        tsAccessor.Modifiers.Add(new TSSyntaxToken { Kind = TSKind.Static });
+                                }
+
+                                tsClassNode.Members.Add(tsProperty);
 
                                 if (property.Modifiers.Any(m => m.Kind() == SyntaxKind.PublicKeyword))
-                                    tsMethod.Modifiers.Add(new TSSyntaxToken { Kind = TSKind.Public });
+                                    tsProperty.Modifiers.Add(new TSSyntaxToken { Kind = TSKind.Public });
 
                                 if (property.Modifiers.Any(m => m.Kind() == SyntaxKind.StaticKeyword))
-                                    tsMethod.Modifiers.Add(new TSSyntaxToken { Kind = TSKind.Static });
+                                    tsProperty.Modifiers.Add(new TSSyntaxToken { Kind = TSKind.Static });
                             }
                         }
                     }
@@ -129,12 +169,14 @@ namespace Rotslyn.Transpilers
         public const string BooleanType = "boolean";
         public const string StringType = "string";
         public const string VoidType = "void";
+        public const string AnyType = "any";
 
         static TypeMap()
         {
             TypeMappings.AddRange(NumberTypeMappings);
             TypeMappings.AddRange(BooleanTypeMappings);
             TypeMappings.AddRange(StringTypeMappings);
+            TypeMappings.AddRange(AnyTypeMappings);
         }
 
         private static void AddRange(this IDictionary<string, string> dictionary,
@@ -166,6 +208,11 @@ namespace Rotslyn.Transpilers
             [nameof(String)] = StringType,
         };
 
+        public static Dictionary<string, string> AnyTypeMappings = new Dictionary<string, string>()
+        {
+            [nameof(Object)] = AnyType,
+        };
+
         public static List<SyntaxKind> NumberKinds { get; }= new List<SyntaxKind>
         {
             SyntaxKind.IntKeyword,
@@ -188,6 +235,10 @@ namespace Rotslyn.Transpilers
         {
             SyntaxKind.VoidKeyword,
         };
+        public static List<SyntaxKind> AnyKinds { get; } = new List<SyntaxKind>
+        {
+            SyntaxKind.ObjectKeyword,
+        };
 
         public static string GetTSType(this TypeSyntax typeSyntax)
         {
@@ -206,6 +257,9 @@ namespace Rotslyn.Transpilers
 
                 if (VoidKinds.Contains(kind))
                     return VoidType;
+
+                if (AnyKinds.Contains(kind))
+                    return AnyType;
             }
 
             var identifier = typeSyntax.ToString();
