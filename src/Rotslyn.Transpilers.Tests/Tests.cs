@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using ApprovalTests;
 using ApprovalTests.Reporters;
 using ApprovalTests.Utilities;
+using Rotslyn.Transpilers.Tests.Samples;
 using Shouldly;
 using Xunit;
 
@@ -29,11 +30,14 @@ namespace Rotslyn.Transpilers.Tests
             return File.ReadAllText(filePath);
         }
 
-        [Fact]
-        public void BasicPublicStaticClass()
+        [Theory]
+        [InlineData(nameof(BasicPublicStaticClass))]
+        [InlineData(nameof(BasicEnum))]
+        [InlineData(nameof(EnumWithValues))]
+        public void IntegrationTests(string testname)
         {
-            var csCode = ReadFile(nameof(BasicPublicStaticClass), FileType.CS);
-            var tsCode = ReadFile(nameof(BasicPublicStaticClass), FileType.TS);
+            var csCode = ReadFile(testname, FileType.CS);
+            var tsCode = ReadFile(testname, FileType.TS);
             var transipledTsCode = RotslynTranspiler.Transpile(csCode, Language.CSharp);
 
             if (!tsCode.Equals(transipledTsCode))

@@ -6,6 +6,7 @@ namespace Rotslyn.Transpilers.TSSyntax
         Public,
         Class,
         Module,
-        Static
+        Static,
+        Enum
     }
 }
