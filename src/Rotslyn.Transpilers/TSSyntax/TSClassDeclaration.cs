@@ -22,8 +22,14 @@ namespace Rotslyn.Transpilers.TSSyntax
 
             sb.AppendLine($" {Name} {{");
 
+            var count = Members.Count;
             foreach (var member in Members)
+            {
+                count--;
                 sb.AppendLine(member.ToString());
+                if (count > 0)
+                    sb.AppendLine();
+            }
 
             sb.AppendTab(1, "}");
 
