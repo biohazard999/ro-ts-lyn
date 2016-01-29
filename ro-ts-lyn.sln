@@ -9,7 +9,26 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".docs", ".docs", "{465D6349
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rotslyn.Transpilers", "src\Rotslyn.Transpilers\Rotslyn.Transpilers.csproj", "{9D96E549-8016-440B-BF63-BF2F2CC9B375}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{09584650-0BFD-4106-B272-F693E5A602C2}"
+	ProjectSection(SolutionItems) = preProject
+		.paket\paket.bootstrapper.exe = .paket\paket.bootstrapper.exe
+		paket.dependencies = paket.dependencies
+		paket.lock = paket.lock
+	EndProjectSection
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9D96E549-8016-440B-BF63-BF2F2CC9B375}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D96E549-8016-440B-BF63-BF2F2CC9B375}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D96E549-8016-440B-BF63-BF2F2CC9B375}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D96E549-8016-440B-BF63-BF2F2CC9B375}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
